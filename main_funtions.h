@@ -10,5 +10,5 @@
 
 int main_function();
 void create_database(QString, QList <QImage>);
-
+int whats_numb_people(QString);
 #endif // MAIN_FUNTIONS_H

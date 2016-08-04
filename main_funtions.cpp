@@ -43,13 +43,19 @@ int main_function()
 
     if (!QFile::exists(folder+"database.csv") )
     {
+        cout<<"Database not found. Create new database!";
         create_database(folder, crop_images_list);
     }
     else
     {
+
         //Распознаем лица на снимке
         face_recog face_recognation_obj;    //тренируем модель
-        face_recognation_obj.train_model(2, (folder+"database.csv").toStdString());
+        cout<<whats_numb_people(folder);
+        if(whats_numb_people(folder)>1)
+            face_recognation_obj.train_model(2, (folder+"database.csv").toStdString());
+        else
+            face_recognation_obj.train_model(1, (folder+"database.csv").toStdString());
         QList <int> numb_ident;
         QList <int> numb_ident2;
         for(int i = 0; i < crop_images_list.size(); i++)
@@ -89,7 +95,7 @@ int main_function()
                 }
             }
         }
-        if(error_flag>(all_numb_photo/4))
+        if(error_flag>0)
         {
             cout<<"errors:"<<error_flag<<endl;
             cout<<"The system not recognize face. Please restart system."<<endl;
@@ -97,7 +103,7 @@ int main_function()
         }
         else//Будем считать, что человек найден
         {
-            cout<<"smile errors:"<<error_flag<<endl;
+            cout<<"Face errors:"<<error_flag<<endl;
             QList <int> listValue;
             QList <int> counterValue;
             listValue.push_front(numb_ident2.takeFirst());
@@ -202,4 +208,29 @@ void create_database(QString name_base, QList <QImage> images)
             numb_photo++;
         }
     }
+    fileWithName.close();
+}
+
+int whats_numb_people(QString name_base)
+{
+    QFile fileWithName(name_base + "database.csv");
+    fileWithName.open(QIODevice::ReadOnly | QIODevice::Text);
+    int whats_numb =0;
+    int old_value = 0;
+    while(!fileWithName.atEnd())
+    {
+        QString str;
+        str = fileWithName.readLine();
+        QStringList list1 = str.split(';');
+        QString value = list1.at(1);
+        int now_value = value.toInt();
+
+        if(now_value!=old_value)
+        {
+            old_value = now_value;
+            whats_numb++;
+        }
+    }
+    fileWithName.close();
+    return whats_numb;
 }

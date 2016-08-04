@@ -24,7 +24,7 @@ public:
 
 private:
     void read_csv(const string&, vector<Mat>&, vector <int>&);
-    int recognition_threshold=1000;
+    int recognition_threshold=800;
 };
 
 Mat img_for_database(Mat);
